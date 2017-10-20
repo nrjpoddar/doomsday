@@ -1,0 +1,38 @@
+apiVersion: "config.istio.io/v1alpha2"
+kind: denier
+metadata:
+  name: denyhandler
+  namespace: istio-system
+spec:
+  status:
+    code: 7
+    message: Not allowed
+---
+apiVersion: "config.istio.io/v1alpha2"
+kind: checknothing
+metadata:
+  name: checknothinginstance
+  namespace: istio-system
+spec:
+---
+apiVersion: "config.istio.io/v1alpha2"
+kind: rule
+metadata:
+  name: denyclockv2
+  namespace: istio-system
+spec:
+  match: destination.labels["app"]=="doomsday-clock" && source.labels["app"]=="doomsday-frontend" && destination.labels["version"] == "v2"
+  actions:
+  - handler: denyhandler.denier.istio-system
+    instances: [ checknothinginstance.checknothing.istio-system ]
+---
+apiVersion: "config.istio.io/v1alpha2"
+kind: rule
+metadata:
+  name: denyfrontendheader
+  namespace: istio-system
+spec:
+  match: destination.labels["app"]=="doomsday-frontend" && request.headers["foo"] == "bar"
+  actions:
+  - handler: denyhandler.denier.istio-system
+    instances: [ checknothinginstance.checknothing.istio-system ]

@@ -1,0 +1,10 @@
+{
+  "name": "doomsday-frontend",
+  "version": "1.0.0",
+  "author": "Neeraj Poddar",
+  "license": "MIT",
+  "main": "index.js",
+  "dependencies": {
+    "request": "^2.82.0"
+  }
+}

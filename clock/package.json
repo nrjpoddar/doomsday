@@ -1,0 +1,8 @@
+{
+  "name": "doomsday-clock",
+  "version": "1.0.0",
+  "author": "Neeraj Poddar",
+  "license": "MIT",
+  "main": "index.js"
+}
+
