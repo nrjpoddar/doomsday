@@ -4,9 +4,18 @@ const request = require('request');
 const listening_port = 8080;
 const doomsday_clock_service_name = process.argv[2] || 'doomsday-clock.default.svc.cluster.local';
 const doomsday_clock_service_port = process.argv[3] || 8080;
-const doomsday_clock_service_url = process.argv[4] || '/time';
+const doomsday_clock_service_url = process.argv[4] || 'time';
 const frontend_msg = 'Doomsday clock says: ';
 const clock_svc_uri = "http://" + doomsday_clock_service_name + ":" + doomsday_clock_service_port + "/" + doomsday_clock_service_url;
+const tracing_headers = [
+  "x-request-id",
+  "x-b3-traceid",
+  "x-b3-spanid",
+  "x-b3-parentspanid",
+  "x-b3-sampled",
+  "x-b3-flags",
+  "x-ot-span-context"
+]
 
 const server = http.createServer((req, res) => {
   let onReqTime = Date.now();
@@ -24,7 +33,21 @@ const server = http.createServer((req, res) => {
   req.on('end', () => {
     console.log('Initiating request to doomsday-clock service');
     let onClockResTime = 0;
-    request(clock_svc_uri, (err, response, body) => {
+    let opts = {
+      url: clock_svc_uri
+    }
+    tracing_headers.forEach((h) => {
+      if (req.headers[h]) {
+        if (!opts.headers) {
+          opts.headers = {
+            [h]: req.headers[h]
+          }
+        } else {
+          opts.headers[h] = req.headers[h]
+        }
+      }
+    });
+    request(opts, (err, response, body) => {
       if (err) {
         console.log('Received error from clock service:', err);
         res.statusCode = 503;

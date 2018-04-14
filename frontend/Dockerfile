@@ -9,6 +9,8 @@ RUN apt-get update -y && \
 
 COPY package.json $APPDIR/
 
+RUN npm install
+
 ENTRYPOINT [ "node", "index.js" ]
 
 ADD index.js $APPDIR/
